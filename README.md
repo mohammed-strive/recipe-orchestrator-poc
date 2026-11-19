@@ -22,7 +22,7 @@ Everything is mocked except the mechanics: 10 plugins in a local git "marketplac
         postgres    embeddings      mock-data MCP :7310
         +pgvector   (bge-small)     (FX rates, inventory)
         :5433       :7200
-   └────────────────── docker compose ──────────────────┘
+   └────────────────── podman compose ──────────────────┘
 ```
 
 ## What this demonstrates
@@ -49,7 +49,12 @@ Everything is mocked except the mechanics: 10 plugins in a local git "marketplac
 
 ## Prerequisites
 
-- Docker with Compose v2
+- Podman 5 or later, with a compose provider for `podman compose`: [podman-compose](https://github.com/containers/podman-compose) 1.3 or later (`brew install podman-compose` or `pip install podman-compose`), or Docker Compose v2. The stack relies on `depends_on: condition: service_healthy`, which older podman-compose releases don't support.
+- On macOS or Windows, a running Podman machine with at least 4 GB of memory (the embeddings image build needs it):
+  ```bash
+  podman machine init --memory 4096   # once
+  podman machine start
+  ```
 - Node.js 22 or later (the engine uses `--env-file-if-exists`)
 - Python 3.10 or later on the host (plugin scripts run on the host)
 - git and curl
@@ -59,8 +64,8 @@ Everything is mocked except the mechanics: 10 plugins in a local git "marketplac
 
 ```bash
 # 1. Infrastructure: postgres+pgvector, git marketplace, embeddings, mock data, registry
-docker compose up -d --build
-docker compose logs -f registry      # wait for "initial index: ..." then Ctrl-C
+podman compose up -d --build
+podman compose logs -f registry      # wait for "initial index: ..." then Ctrl-C
 
 # 2. Recipe engine on the host
 cp .env.example .env                 # optional: AGENT_RUNNER=stub runs without AI
@@ -74,7 +79,7 @@ tools/smoke-test.sh
 claude --plugin-dir ./plugin-x
 ```
 
-The first `docker compose up --build` downloads the embedding model into the image (about 130 MB).
+The first `podman compose up --build` downloads the embedding model into the image (about 130 MB).
 
 ### In Claude Code
 
@@ -101,7 +106,7 @@ Claude Code may ask you to approve the plugin's MCP servers (`recipe-engine`, `c
 ```
 plugin-x/          Claude Code plugin: commands, recipe-runner skill, .mcp.json (engine + registry)
 engine/            Recipe engine (TypeScript, MCP over HTTP on :7400, runs on the host)
-registry/          Capability registry (TypeScript, MCP over HTTP on :7300, Docker)
+registry/          Capability registry (TypeScript, MCP over HTTP on :7300, container)
 infra/             postgres schema, git-server, embeddings service (Python), mock-data MCP server
 marketplace/       plugins/<plugin>/<version>/ (seeded into git-server) and policy.json
 recipes/           <industry>/<recipe>/recipe.yaml, evals.yaml, samples/, evals/
@@ -149,7 +154,7 @@ Mock plugins follow the Claude Code plugin structure (`.claude-plugin/plugin.jso
 - `requirements.lock`: pinned Python dependencies for scripts. The engine refuses code components without one.
 - Code protocol: `python3 <script> --inputs inputs.json --outdir out/` → `out/outputs.json`.
 
-To publish a new version: add `marketplace/plugins/<plugin>/<new-version>/`, then run `tools/publish-plugin.sh <plugin> <new-version>`. That pushes a tag to the git-server and calls the registry's `/reindex`. Versions are immutable. To reseed everything from `marketplace/plugins`, run `docker compose down -v && docker compose up -d`.
+To publish a new version: add `marketplace/plugins/<plugin>/<new-version>/`, then run `tools/publish-plugin.sh <plugin> <new-version>`. For a plugin that doesn't exist yet, the script creates the repository with `podman compose exec`; set `COMPOSE="docker compose"` to use Docker instead. It then pushes a tag to the git-server and calls the registry's `/reindex`. Versions are immutable. To reseed everything from `marketplace/plugins`, run `podman compose down -v && podman compose up -d`.
 
 The seed uses fixed authors and dates, so commit SHAs are identical on every machine and the SHAs pinned in the recipes match. If you change a seeded plugin, its SHA changes. The engine will then refuse the old pin; update the recipe from `tools/print-shas.sh`.
 
@@ -178,8 +183,12 @@ Without reranking, discovery confidence is computed from retrieval: how strongly
 
 ## Troubleshooting
 
-- `capability registry ... fetch failed`: the registry isn't up yet, or is still indexing. Check `docker compose logs registry`.
+- `capability registry ... fetch failed`: the registry isn't up yet, or is still indexing. Check `podman compose logs registry`.
 - `Could not clone git://localhost:9418/...`: the git-server container isn't running, or port 9418 is taken.
+- `registry` never starts, or `podman compose up` waits forever on a dependency: check `podman ps` for `(healthy)` on postgres, git-server and embeddings. Podman runs health checks through systemd timers, so on Linux hosts without systemd (some WSL or container setups) they never run; start the registry by hand with `podman compose up -d --no-deps registry` once the others are up. Also make sure your podman-compose is 1.3 or later.
+- `short-name ... did not resolve to an alias`: images are fully qualified (`docker.io/...`) in this repo; if you add one, qualify it too, or Podman may prompt for a registry.
+- `Permission denied` reading `init.sql`, `policy.json` or `marketplace/plugins` inside a container (Linux hosts with SELinux): add `,z` to those bind mounts in `docker-compose.yml`, for example `./marketplace/policy.json:/policy/policy.json:ro,z`.
+- Ports not reachable on `localhost` (macOS/Windows): make sure the Podman machine is running (`podman machine list`); it forwards published ports to the host.
 - `... is at <sha> in the marketplace, but the recipe or lock pins <sha>`: a seeded plugin changed. Update the pin from `tools/print-shas.sh`, or reseed.
 - `claude failed: ...` in an agent step: check that `claude -p "hi"` works in the same shell, or set `AGENT_RUNNER=stub` to test the pipeline.
 - Engine state lives in `.runs/`. Delete it to start fresh. Runs left `running` when the engine stopped become `interrupted`; `start_run` resumes them from their last checkpoint.

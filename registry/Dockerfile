@@ -1,11 +1,11 @@
-FROM node:22-alpine AS build
+FROM docker.io/library/node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci
 COPY src ./src
 RUN npm run build && npm prune --omit=dev
 
-FROM node:22-alpine
+FROM docker.io/library/node:22-alpine
 RUN apk add --no-cache git && git config --global --add safe.directory '*'
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
