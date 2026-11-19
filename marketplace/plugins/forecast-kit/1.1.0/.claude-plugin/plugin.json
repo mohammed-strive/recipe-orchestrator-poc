@@ -1,0 +1,8 @@
+{
+  "name": "forecast-kit",
+  "version": "1.1.0",
+  "description": "Revenue projection toolkit (linear projection now accepts 2 quarters).",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

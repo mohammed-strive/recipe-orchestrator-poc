@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "table/demand-forecast@1",
+  "title": "table/demand-forecast@1",
+  "description": "Forecast weekly unit demand per store",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "store": {
+        "type": "string"
+      },
+      "week": {
+        "type": "string"
+      },
+      "forecast_units": {
+        "type": "number"
+      },
+      "method": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "store",
+      "week",
+      "forecast_units",
+      "method"
+    ],
+    "additionalProperties": true
+  }
+}

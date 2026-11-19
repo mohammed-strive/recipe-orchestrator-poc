@@ -1,0 +1,44 @@
+{
+  "plugin": "fx-converter-lite",
+  "components": [
+    {
+      "card_status": "generated",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [
+        "Fetch rates"
+      ],
+      "limitations": [
+        "Rows with unknown currencies are dropped"
+      ],
+      "id": "convert_to_usd",
+      "kind": "code",
+      "entry": "scripts/convert_to_usd.py",
+      "summary": "Convert monetary amounts in a revenue table to US dollars using supplied FX rates.",
+      "does": [
+        "Converts amounts to USD",
+        "Rounds to whole dollars"
+      ],
+      "inputs": {
+        "actuals": "table/financial-actuals@1",
+        "rates": "data/fx-rates@1"
+      },
+      "outputs": {
+        "usd_actuals": "table/usd-actuals@1"
+      },
+      "tags": [
+        "finance",
+        "fx",
+        "currency",
+        "conversion",
+        "usd"
+      ],
+      "examples": [
+        "Convert revenue to USD"
+      ]
+    }
+  ]
+}

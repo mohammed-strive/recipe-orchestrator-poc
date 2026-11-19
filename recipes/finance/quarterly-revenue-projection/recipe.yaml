@@ -1,0 +1,120 @@
+# Finance recipe. Demonstrates: pinned plugins, a discovered step (resolved before the run),
+# a tool step with a data snapshot, a loop with a fallback, a conditional approval, and
+# AI steps for commentary and the report.
+recipe: quarterly-revenue-projection
+version: 1.0.0
+title: Quarterly revenue projection by region
+description: >
+  Loads quarterly revenue actuals, converts them to US dollars, projects the next quarters
+  for every region, flags large changes for review, and writes commentary and a finance report.
+industry: finance
+tags: [finance, revenue, projection, forecast, quarterly, report, fx]
+
+runtime:
+  model: claude-sonnet-5-5
+  discovery_threshold: 0.6
+
+inputs:
+  actuals_csv:
+    type: file
+    required: true
+    description: CSV export with region, quarter, currency and revenue columns
+  period:
+    type: string
+    default: 2026-Q3
+    description: Reporting period used for FX rates
+  horizon_quarters:
+    type: integer
+    default: 2
+
+# Every plugin a step names is pinned to an exact version and commit.
+plugins:
+  fin-ingest:    { version: 1.0.0, sha: c5e8cc1b5095f81ce84498372d18bd43851194e9 }
+  fx-rates:      { version: 1.0.0, sha: 2a3ba86a3d462b15dc1483803be5e2ec2112d848 }
+  forecast-kit:  { version: 1.0.0, sha: daee49fe3750fa70247b119730a8fbfadc1ab8ff }
+  report-writer: { version: 1.0.0, sha: e8a3b83feacb74ac3aadc18417aacad1bc28398c }
+
+blocks:
+  - id: ingest
+    title: Load and normalise actuals
+    steps:
+      - id: load_actuals
+        uses: fin-ingest#load_actuals
+        with:
+          file: ${inputs.actuals_csv}
+
+      - id: fetch_rates
+        uses: fx-rates#fetch_rates
+        with:
+          period: ${inputs.period}
+
+      # No plugin named: the engine discovers one before the run and records it in the lock file.
+      - id: normalise_currency
+        task: Convert every revenue figure in the actuals table from local currency to US dollars using the official FX rates
+        inputs:
+          actuals: { contract: table/financial-actuals@1, value: "${steps.load_actuals.outputs.actuals}" }
+          rates:   { contract: data/fx-rates@1, value: "${steps.fetch_rates.outputs.rates}" }
+        outputs:
+          usd_actuals: { contract: table/usd-actuals@1 }
+        discovery:
+          tags: [fx, currency]
+          kinds: [code, tool]
+
+  - id: projection
+    title: Project revenue
+    steps:
+      - id: project
+        foreach: $distinct(steps.normalise_currency.outputs.usd_actuals.region)
+        max_items: 20
+        steps:
+          - id: project_region
+            uses: forecast-kit#linear_projection
+            with:
+              usd_actuals: ${steps.normalise_currency.outputs.usd_actuals}
+              region: ${item}
+              horizon_quarters: ${inputs.horizon_quarters}
+            on_failure:
+              fallback: project_region_naive
+
+          - id: project_region_naive
+            uses: forecast-kit#naive_projection
+            only_as_fallback: true
+            with:
+              usd_actuals: ${steps.normalise_currency.outputs.usd_actuals}
+              region: ${item}
+              horizon_quarters: ${inputs.horizon_quarters}
+
+      - id: variance
+        uses: forecast-kit#variance_check
+        with:
+          usd_actuals: ${steps.normalise_currency.outputs.usd_actuals}
+          projection: ${steps.project.outputs.projection}
+
+      - id: variance_review
+        type: approval
+        when: steps.variance.outputs.max_abs_variance > 0.10
+        message: >
+          The largest projected change against last quarter is
+          ${$round(steps.variance.outputs.max_abs_variance * 100, 1)}%.
+          Review the projection before the report is written.
+
+  - id: reporting
+    title: Commentary and report
+    steps:
+      - id: commentary
+        uses: forecast-kit#projection_commentary
+        task: Write commentary on the regional revenue projection for the finance leadership team
+        with:
+          projection: ${steps.project.outputs.projection}
+          variance: ${steps.variance.outputs.variance}
+
+      - id: report
+        uses: report-writer#compose_report
+        task: Compose the quarterly revenue projection report
+        with:
+          commentary: ${steps.commentary.outputs.commentary}
+          table: ${steps.project.outputs.projection}
+
+outputs:
+  report: ${steps.report.outputs.report}
+  projection: ${steps.project.outputs.projection}

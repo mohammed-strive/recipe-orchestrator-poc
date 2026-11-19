@@ -1,0 +1,77 @@
+# Local infrastructure for the recipe orchestrator POC.
+# The recipe engine runs on the host (npm start in engine/) so it can start headless
+# Claude Code sessions; everything it depends on runs here.
+name: recipe-orchestrator-poc
+
+services:
+  # Capability registry index (pgvector) and central audit store.
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: poc
+      POSTGRES_PASSWORD: poc
+      POSTGRES_DB: orchestrator
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poc -d orchestrator"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Mock private plugin marketplace: one git repo per plugin, one tag per version.
+  # Seeded from ./marketplace/plugins on first start (deterministic commit SHAs).
+  git-server:
+    build: ./infra/git-server
+    ports:
+      - "9418:9418"
+    volumes:
+      - marketplace-git:/srv/git
+      - ./marketplace/plugins:/seed/plugins:ro
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/seeded"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Local embedding model (BAAI/bge-small-en-v1.5, downloaded at build time).
+  embeddings:
+    build: ./infra/embeddings
+    ports:
+      - "7200:7200"
+
+  # Mock external data sources (FX rates, inventory) exposed as MCP tools.
+  mock-data:
+    build: ./infra/mock-data-mcp
+    ports:
+      - "7310:7310"
+
+  # Capability registry: indexes the marketplace and serves hybrid search over MCP.
+  registry:
+    build: ./registry
+    environment:
+      DATABASE_URL: postgres://poc:poc@postgres:5432/orchestrator
+      GIT_REPOS_DIR: /srv/git
+      GIT_PUBLIC_URL: git://localhost:9418
+      EMBEDDINGS_URL: http://embeddings:7200
+      POLICY_FILE: /policy/policy.json
+      REINDEX_INTERVAL_SEC: "60"
+    ports:
+      - "7300:7300"
+    volumes:
+      - marketplace-git:/srv/git:ro
+      - ./marketplace/policy.json:/policy/policy.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      git-server:
+        condition: service_healthy
+      embeddings:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  marketplace-git:

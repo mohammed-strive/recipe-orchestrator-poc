@@ -1,0 +1,6 @@
+{
+  "name": "plugin-x",
+  "version": "0.1.0",
+  "description": "Find and run analysis recipes. A thin front end to the recipe engine and capability registry (POC).",
+  "author": { "name": "Recipe Orchestrator POC" }
+}

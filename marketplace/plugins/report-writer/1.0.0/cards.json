@@ -1,0 +1,47 @@
+{
+  "plugin": "report-writer",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "table": {
+          "type": "string",
+          "description": "Optional path to a JSON table to include"
+        }
+      },
+      "does_not": [
+        "Perform analysis",
+        "Add new facts"
+      ],
+      "limitations": [],
+      "id": "compose_report",
+      "kind": "skill",
+      "entry": "compose-report",
+      "summary": "Compose a finished Markdown report from analyst commentary and an optional supporting table.",
+      "does": [
+        "Produces a titled Markdown report",
+        "Renders a supporting table"
+      ],
+      "inputs": {
+        "commentary": "doc/commentary@1"
+      },
+      "outputs": {
+        "report": "doc/report@1"
+      },
+      "tags": [
+        "report",
+        "markdown",
+        "document",
+        "summary"
+      ],
+      "examples": [
+        "Write the quarterly report",
+        "Turn commentary into a shareable report"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+# Recipe tests. The share of applicable checks that pass is the run's confidence score.
+threshold: 0.8
+checks:
+  - id: forecast-matches-reference
+    step: forecast_demand
+    port: forecast
+    kind: golden
+    golden: evals/golden_forecast.json
+    when_inputs: { sales_csv: samples/store_sales.csv }
+    tolerance: { relative: 0.02 }
+
+  - id: risk-matches-reference
+    step: stockout
+    port: risk
+    kind: golden
+    golden: evals/golden_risk.json
+    when_inputs: { sales_csv: samples/store_sales.csv }
+    tolerance: { relative: 0.02 }
+
+  - id: every-store-rated
+    step: stockout
+    port: risk
+    kind: expression
+    expr: "$count($) >= 1 and $count($[risk in ['low','medium','high']]) = $count($)"
+
+  - id: summary-names-high-risk-store
+    step: summary
+    port: commentary
+    kind: contains
+    values: [S-202]
+
+  - id: report-has-sections
+    step: report
+    port: report
+    kind: contains
+    field: markdown
+    values: ["## Summary", "## Highlights", "## Risks"]

@@ -1,0 +1,55 @@
+{
+  "plugin": "fin-ingest",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "file": {
+          "type": "string",
+          "required": true,
+          "description": "Path to the CSV file"
+        },
+        "region_filter": {
+          "type": "string",
+          "default": "ALL"
+        }
+      },
+      "does_not": [
+        "Convert currencies",
+        "Read Excel files"
+      ],
+      "limitations": [
+        "CSV only"
+      ],
+      "id": "load_actuals",
+      "kind": "code",
+      "entry": "scripts/load_actuals.py",
+      "summary": "Load quarterly revenue actuals from a CSV export into a normalised table in local currency.",
+      "does": [
+        "Reads CSV with region, quarter, currency, revenue columns",
+        "Optionally filters to one region",
+        "Normalises currency codes"
+      ],
+      "inputs": {},
+      "outputs": {
+        "actuals": "table/financial-actuals@1",
+        "row_count": "scalar:integer"
+      },
+      "tags": [
+        "finance",
+        "ingest",
+        "csv",
+        "actuals",
+        "revenue"
+      ],
+      "examples": [
+        "Load last quarter's revenue export",
+        "Read regional revenue actuals from CSV"
+      ]
+    }
+  ]
+}

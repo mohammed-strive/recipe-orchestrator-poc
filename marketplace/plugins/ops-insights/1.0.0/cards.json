@@ -1,0 +1,39 @@
+{
+  "plugin": "ops-insights",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [],
+      "limitations": [],
+      "id": "store_performance_summary",
+      "kind": "skill",
+      "entry": "store-performance-summary",
+      "summary": "Summarise store sales and stock-out risk into commentary for retail operations managers.",
+      "does": [
+        "Highlights best and worst stores",
+        "Recommends replenishment for high-risk stores"
+      ],
+      "inputs": {
+        "sales": "table/store-sales@1",
+        "risk": "table/stockout-risk@1"
+      },
+      "outputs": {
+        "commentary": "doc/commentary@1"
+      },
+      "tags": [
+        "retail",
+        "commentary",
+        "operations",
+        "stores"
+      ],
+      "examples": [
+        "Explain this week's store performance"
+      ]
+    }
+  ]
+}

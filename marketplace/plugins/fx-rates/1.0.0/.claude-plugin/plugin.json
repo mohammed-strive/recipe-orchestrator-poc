@@ -1,0 +1,8 @@
+{
+  "name": "fx-rates",
+  "version": "1.0.0",
+  "description": "FX rates from the treasury rates service, and currency conversion.",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

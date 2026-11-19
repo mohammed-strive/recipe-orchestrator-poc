@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mock-data": {
+      "type": "http",
+      "url": "http://localhost:7310/mcp"
+    }
+  }
+}

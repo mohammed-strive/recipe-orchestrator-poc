@@ -1,0 +1,18 @@
+{
+  "description": "Governance policy: components approved for use without confirmation in automatic runs. Only components with verified cards are eligible.",
+  "pre_approved": [
+    "fin-ingest#load_actuals",
+    "fx-rates#fetch_rates",
+    "fx-rates#convert_currency",
+    "forecast-kit#linear_projection",
+    "forecast-kit#naive_projection",
+    "forecast-kit#variance_check",
+    "forecast-kit#projection_commentary",
+    "report-writer#compose_report",
+    "retail-ingest#load_store_sales",
+    "demand-forecast#moving_average_forecast",
+    "inventory-tools#fetch_inventory",
+    "inventory-tools#stockout_risk",
+    "ops-insights#store_performance_summary"
+  ]
+}

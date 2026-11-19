@@ -1,0 +1,8 @@
+{
+  "name": "legacy-forecast",
+  "version": "0.9.0",
+  "description": "Older demand forecasting scripts migrated from the analytics team.",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

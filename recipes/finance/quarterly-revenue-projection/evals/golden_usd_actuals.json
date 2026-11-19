@@ -1,0 +1,92 @@
+[
+  {
+    "region": "APAC",
+    "quarter": "2025-Q4",
+    "revenue_usd": 1786500.0
+  },
+  {
+    "region": "APAC",
+    "quarter": "2026-Q1",
+    "revenue_usd": 2143800.0
+  },
+  {
+    "region": "APAC",
+    "quarter": "2026-Q2",
+    "revenue_usd": 2560650.0
+  },
+  {
+    "region": "APAC",
+    "quarter": "2026-Q3",
+    "revenue_usd": 3096600.0
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2025-Q4",
+    "revenue_usd": 4518200.0
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2026-Q1",
+    "revenue_usd": 4683500.0
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2026-Q2",
+    "revenue_usd": 4826760.0
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2026-Q3",
+    "revenue_usd": 4981040.0
+  },
+  {
+    "region": "LATAM",
+    "quarter": "2026-Q2",
+    "revenue_usd": 900000.0
+  },
+  {
+    "region": "LATAM",
+    "quarter": "2026-Q3",
+    "revenue_usd": 1010000.0
+  },
+  {
+    "region": "NA",
+    "quarter": "2025-Q4",
+    "revenue_usd": 7800000.0
+  },
+  {
+    "region": "NA",
+    "quarter": "2026-Q1",
+    "revenue_usd": 7950000.0
+  },
+  {
+    "region": "NA",
+    "quarter": "2026-Q2",
+    "revenue_usd": 8010000.0
+  },
+  {
+    "region": "NA",
+    "quarter": "2026-Q3",
+    "revenue_usd": 8150000.0
+  },
+  {
+    "region": "UK",
+    "quarter": "2025-Q4",
+    "revenue_usd": 2696400.0
+  },
+  {
+    "region": "UK",
+    "quarter": "2026-Q1",
+    "revenue_usd": 2632200.0
+  },
+  {
+    "region": "UK",
+    "quarter": "2026-Q2",
+    "revenue_usd": 2670720.0
+  },
+  {
+    "region": "UK",
+    "quarter": "2026-Q3",
+    "revenue_usd": 2722080.0
+  }
+]

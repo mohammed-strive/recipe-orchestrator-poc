@@ -1,0 +1,8 @@
+{
+  "name": "demand-forecast",
+  "version": "2.0.0",
+  "description": "Store-level demand forecasting.",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

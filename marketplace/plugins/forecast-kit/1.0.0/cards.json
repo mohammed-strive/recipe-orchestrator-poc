@@ -1,0 +1,165 @@
+{
+  "plugin": "forecast-kit",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "region": {
+          "type": "string",
+          "required": true
+        },
+        "horizon_quarters": {
+          "type": "integer",
+          "default": 2
+        }
+      },
+      "does_not": [
+        "Model seasonality",
+        "Project several regions at once"
+      ],
+      "limitations": [
+        "Needs at least 3 quarters of history"
+      ],
+      "id": "linear_projection",
+      "kind": "code",
+      "entry": "scripts/linear_projection.py",
+      "summary": "Project future quarterly revenue for one region with a least-squares linear trend.",
+      "does": [
+        "Fits a linear trend to the region's USD history",
+        "Projects the next N quarters"
+      ],
+      "inputs": {
+        "usd_actuals": "table/usd-actuals@1"
+      },
+      "outputs": {
+        "projection": "table/projection@1"
+      },
+      "tags": [
+        "finance",
+        "projection",
+        "forecast",
+        "revenue",
+        "trend"
+      ],
+      "examples": [
+        "Project next two quarters of revenue for EMEA"
+      ]
+    },
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "region": {
+          "type": "string",
+          "required": true
+        },
+        "horizon_quarters": {
+          "type": "integer",
+          "default": 2
+        }
+      },
+      "does_not": [
+        "Model any trend"
+      ],
+      "limitations": [],
+      "id": "naive_projection",
+      "kind": "code",
+      "entry": "scripts/naive_projection.py",
+      "summary": "Project future quarterly revenue for one region by carrying the last actual forward.",
+      "does": [
+        "Works with a single quarter of history"
+      ],
+      "inputs": {
+        "usd_actuals": "table/usd-actuals@1"
+      },
+      "outputs": {
+        "projection": "table/projection@1"
+      },
+      "tags": [
+        "finance",
+        "projection",
+        "fallback"
+      ],
+      "examples": [
+        "Fallback projection when history is short"
+      ]
+    },
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [],
+      "limitations": [],
+      "id": "variance_check",
+      "kind": "code",
+      "entry": "scripts/variance_check.py",
+      "summary": "Compare the first projected quarter with the last actual quarter for each region.",
+      "does": [
+        "Computes relative variance per region",
+        "Reports the largest absolute variance"
+      ],
+      "inputs": {
+        "usd_actuals": "table/usd-actuals@1",
+        "projection": "table/projection@1"
+      },
+      "outputs": {
+        "variance": "data/variance@1",
+        "max_abs_variance": "scalar:number"
+      },
+      "tags": [
+        "finance",
+        "variance",
+        "review"
+      ],
+      "examples": [
+        "Flag regions whose projection jumps sharply"
+      ]
+    },
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [
+        "Change any numbers"
+      ],
+      "limitations": [],
+      "id": "projection_commentary",
+      "kind": "skill",
+      "entry": "projection-commentary",
+      "summary": "Write analyst commentary on a revenue projection and its variance against actuals.",
+      "does": [
+        "Summarises projection results with numbers",
+        "Flags risks and naive-method regions"
+      ],
+      "inputs": {
+        "projection": "table/projection@1",
+        "variance": "data/variance@1"
+      },
+      "outputs": {
+        "commentary": "doc/commentary@1"
+      },
+      "tags": [
+        "finance",
+        "commentary",
+        "narrative",
+        "projection"
+      ],
+      "examples": [
+        "Explain this quarter's revenue projection for the CFO"
+      ]
+    }
+  ]
+}

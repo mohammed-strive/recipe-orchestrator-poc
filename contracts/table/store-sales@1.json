@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "table/store-sales@1",
+  "title": "table/store-sales@1",
+  "description": "Weekly unit sales per store",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "store": {
+        "type": "string"
+      },
+      "region": {
+        "type": "string"
+      },
+      "week": {
+        "type": "string"
+      },
+      "units": {
+        "type": "integer"
+      }
+    },
+    "required": [
+      "store",
+      "region",
+      "week",
+      "units"
+    ],
+    "additionalProperties": true
+  }
+}

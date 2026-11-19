@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "data/fx-rates@1",
+  "title": "data/fx-rates@1",
+  "description": "FX rates to USD for a period (1 unit of currency = rate USD)",
+  "type": "object",
+  "properties": {
+    "base": {
+      "const": "USD"
+    },
+    "period": {
+      "type": "string"
+    },
+    "rates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    }
+  },
+  "required": [
+    "base",
+    "period",
+    "rates"
+  ]
+}

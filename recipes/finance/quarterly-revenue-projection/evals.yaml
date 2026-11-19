@@ -1,0 +1,38 @@
+# Recipe tests. Each applicable check passes or fails; the share that pass is the run's
+# confidence score. Golden checks apply only when the run used the matching sample input.
+threshold: 0.8
+checks:
+  - id: usd-conversion-matches-reference
+    step: normalise_currency
+    port: usd_actuals
+    kind: golden
+    golden: evals/golden_usd_actuals.json
+    when_inputs: { actuals_csv: samples/actuals.csv }
+    tolerance: { relative: 0.001 }
+
+  - id: projection-matches-reference
+    step: project
+    port: projection
+    kind: golden
+    golden: evals/golden_projection.json
+    when_inputs: { actuals_csv: samples/actuals.csv }
+    tolerance: { relative: 0.005 }
+
+  - id: every-region-projected
+    step: project
+    port: projection
+    kind: expression
+    expr: "$count($distinct(region)) >= 1 and $count($[projected_revenue_usd < 0]) = 0"
+
+  - id: commentary-has-substance
+    step: commentary
+    port: commentary
+    kind: expression
+    expr: "$count(highlights) >= 2 and $length(narrative) >= 80"
+
+  - id: report-covers-regions
+    step: report
+    port: report
+    kind: contains
+    field: markdown
+    values: [APAC, EMEA, NA]

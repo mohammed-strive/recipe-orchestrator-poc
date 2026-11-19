@@ -1,0 +1,8 @@
+{
+  "name": "retail-ingest",
+  "version": "1.0.0",
+  "description": "Loads point-of-sale exports.",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

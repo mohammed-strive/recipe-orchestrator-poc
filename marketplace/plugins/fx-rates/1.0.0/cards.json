@@ -1,0 +1,89 @@
+{
+  "plugin": "fx-rates",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "period": {
+          "type": "string",
+          "required": true,
+          "description": "Reporting period, e.g. 2026-Q3"
+        }
+      },
+      "does_not": [
+        "Convert amounts",
+        "Return intraday rates"
+      ],
+      "limitations": [],
+      "id": "fetch_rates",
+      "kind": "tool",
+      "entry": "mock-data/get_fx_rates",
+      "summary": "Fetch official month-end FX rates to USD for a reporting period from the treasury rates service.",
+      "does": [
+        "Returns rates for every currency in the period",
+        "Uses official month-end rates"
+      ],
+      "inputs": {},
+      "outputs": {
+        "rates": "data/fx-rates@1"
+      },
+      "tags": [
+        "finance",
+        "fx",
+        "currency",
+        "rates",
+        "treasury"
+      ],
+      "examples": [
+        "Get FX rates for 2026-Q3",
+        "Look up month-end exchange rates"
+      ]
+    },
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [
+        "Fetch rates",
+        "Convert to currencies other than USD"
+      ],
+      "limitations": [
+        "Target currency is always USD"
+      ],
+      "id": "convert_currency",
+      "kind": "code",
+      "entry": "scripts/convert_currency.py",
+      "summary": "Convert revenue actuals from local currency to USD using official FX rates, to the cent.",
+      "does": [
+        "Converts every row to USD",
+        "Keeps cents precision",
+        "Fails loudly when a rate is missing"
+      ],
+      "inputs": {
+        "actuals": "table/financial-actuals@1",
+        "rates": "data/fx-rates@1"
+      },
+      "outputs": {
+        "usd_actuals": "table/usd-actuals@1"
+      },
+      "tags": [
+        "finance",
+        "fx",
+        "currency",
+        "conversion",
+        "usd"
+      ],
+      "examples": [
+        "Convert regional revenue to USD",
+        "Normalise all monetary values to US dollars"
+      ]
+    }
+  ]
+}

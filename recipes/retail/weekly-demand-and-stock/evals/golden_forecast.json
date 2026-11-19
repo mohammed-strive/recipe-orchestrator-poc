@@ -1,0 +1,74 @@
+[
+  {
+    "store": "S-101",
+    "week": "2026-W47",
+    "forecast_units": 195.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-101",
+    "week": "2026-W48",
+    "forecast_units": 195.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-102",
+    "week": "2026-W47",
+    "forecast_units": 66.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-102",
+    "week": "2026-W48",
+    "forecast_units": 66.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-103",
+    "week": "2026-W47",
+    "forecast_units": 247.0,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-103",
+    "week": "2026-W48",
+    "forecast_units": 247.0,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-201",
+    "week": "2026-W47",
+    "forecast_units": 123.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-201",
+    "week": "2026-W48",
+    "forecast_units": 123.7,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-202",
+    "week": "2026-W47",
+    "forecast_units": 58.3,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-202",
+    "week": "2026-W48",
+    "forecast_units": 58.3,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-203",
+    "week": "2026-W47",
+    "forecast_units": 150.3,
+    "method": "moving-average-3w"
+  },
+  {
+    "store": "S-203",
+    "week": "2026-W48",
+    "forecast_units": 150.3,
+    "method": "moving-average-3w"
+  }
+]

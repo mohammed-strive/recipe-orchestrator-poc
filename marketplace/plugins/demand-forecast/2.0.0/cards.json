@@ -1,0 +1,50 @@
+{
+  "plugin": "demand-forecast",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "horizon_weeks": {
+          "type": "integer",
+          "default": 2
+        },
+        "window_weeks": {
+          "type": "integer",
+          "default": 3
+        }
+      },
+      "does_not": [
+        "Model promotions or seasonality"
+      ],
+      "limitations": [],
+      "id": "moving_average_forecast",
+      "kind": "code",
+      "entry": "scripts/moving_average_forecast.py",
+      "summary": "Forecast weekly unit demand per store using a moving average of recent weeks.",
+      "does": [
+        "Forecasts the next N weeks per store",
+        "Configurable averaging window"
+      ],
+      "inputs": {
+        "sales": "table/store-sales@1"
+      },
+      "outputs": {
+        "forecast": "table/demand-forecast@1"
+      },
+      "tags": [
+        "retail",
+        "demand",
+        "forecast",
+        "stores",
+        "units"
+      ],
+      "examples": [
+        "Forecast next two weeks of demand for each store"
+      ]
+    }
+  ]
+}

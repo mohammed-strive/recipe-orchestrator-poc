@@ -1,0 +1,62 @@
+[
+  {
+    "region": "APAC",
+    "quarter": "2026-Q4",
+    "projected_revenue_usd": 3483675,
+    "method": "linear"
+  },
+  {
+    "region": "APAC",
+    "quarter": "2027-Q1",
+    "projected_revenue_usd": 3918390,
+    "method": "linear"
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2026-Q4",
+    "projected_revenue_usd": 5135320,
+    "method": "linear"
+  },
+  {
+    "region": "EMEA",
+    "quarter": "2027-Q1",
+    "projected_revenue_usd": 5288498,
+    "method": "linear"
+  },
+  {
+    "region": "LATAM",
+    "quarter": "2026-Q4",
+    "projected_revenue_usd": 1010000,
+    "method": "naive"
+  },
+  {
+    "region": "LATAM",
+    "quarter": "2027-Q1",
+    "projected_revenue_usd": 1010000,
+    "method": "naive"
+  },
+  {
+    "region": "NA",
+    "quarter": "2026-Q4",
+    "projected_revenue_usd": 8255000,
+    "method": "linear"
+  },
+  {
+    "region": "NA",
+    "quarter": "2027-Q1",
+    "projected_revenue_usd": 8366000,
+    "method": "linear"
+  },
+  {
+    "region": "UK",
+    "quarter": "2026-Q4",
+    "projected_revenue_usd": 2709240,
+    "method": "linear"
+  },
+  {
+    "region": "UK",
+    "quarter": "2027-Q1",
+    "projected_revenue_usd": 2720796,
+    "method": "linear"
+  }
+]

@@ -1,0 +1,47 @@
+{
+  "plugin": "retail-ingest",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "file": {
+          "type": "string",
+          "required": true
+        },
+        "region_filter": {
+          "type": "string",
+          "default": "ALL"
+        }
+      },
+      "does_not": [],
+      "limitations": [],
+      "id": "load_store_sales",
+      "kind": "code",
+      "entry": "scripts/load_store_sales.py",
+      "summary": "Load weekly unit sales per store from a point-of-sale CSV export.",
+      "does": [
+        "Reads store, region, week, units columns",
+        "Optionally filters to one region"
+      ],
+      "inputs": {},
+      "outputs": {
+        "sales": "table/store-sales@1",
+        "stores": "scalar:array"
+      },
+      "tags": [
+        "retail",
+        "ingest",
+        "csv",
+        "sales",
+        "stores"
+      ],
+      "examples": [
+        "Load last month's store sales"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "plugin": "inventory-tools",
+  "components": [
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {
+        "stores": {
+          "type": "array",
+          "description": "Store IDs; omit for all stores"
+        }
+      },
+      "does_not": [],
+      "limitations": [],
+      "id": "fetch_inventory",
+      "kind": "tool",
+      "entry": "mock-data/get_inventory_levels",
+      "summary": "Fetch current on-hand inventory units per store from the inventory system.",
+      "does": [
+        "Returns on-hand units for all or selected stores"
+      ],
+      "inputs": {},
+      "outputs": {
+        "inventory": "data/inventory@1"
+      },
+      "tags": [
+        "retail",
+        "inventory",
+        "stock",
+        "stores"
+      ],
+      "examples": [
+        "Get current stock levels for my stores"
+      ]
+    },
+    {
+      "card_status": "verified",
+      "hosts": [
+        "claude-code",
+        "in-house"
+      ],
+      "params": {},
+      "does_not": [],
+      "limitations": [],
+      "id": "stockout_risk",
+      "kind": "code",
+      "entry": "scripts/stockout_risk.py",
+      "summary": "Rate each store's stock-out risk from forecast demand and on-hand inventory.",
+      "does": [
+        "Computes weeks of cover",
+        "Rates risk high, medium or low",
+        "Counts high-risk stores"
+      ],
+      "inputs": {
+        "forecast": "table/demand-forecast@1",
+        "inventory": "data/inventory@1"
+      },
+      "outputs": {
+        "risk": "table/stockout-risk@1",
+        "high_risk_count": "scalar:integer"
+      },
+      "tags": [
+        "retail",
+        "inventory",
+        "stockout",
+        "risk"
+      ],
+      "examples": [
+        "Which stores will run out of stock next week?"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "store": "S-101",
+    "forecast_units": 195.7,
+    "on_hand": 420,
+    "cover_weeks": 2.15,
+    "risk": "low"
+  },
+  {
+    "store": "S-102",
+    "forecast_units": 66.7,
+    "on_hand": 95,
+    "cover_weeks": 1.42,
+    "risk": "medium"
+  },
+  {
+    "store": "S-103",
+    "forecast_units": 247.0,
+    "on_hand": 610,
+    "cover_weeks": 2.47,
+    "risk": "low"
+  },
+  {
+    "store": "S-201",
+    "forecast_units": 123.7,
+    "on_hand": 150,
+    "cover_weeks": 1.21,
+    "risk": "medium"
+  },
+  {
+    "store": "S-202",
+    "forecast_units": 58.3,
+    "on_hand": 38,
+    "cover_weeks": 0.65,
+    "risk": "high"
+  },
+  {
+    "store": "S-203",
+    "forecast_units": 150.3,
+    "on_hand": 300,
+    "cover_weeks": 2.0,
+    "risk": "low"
+  }
+]

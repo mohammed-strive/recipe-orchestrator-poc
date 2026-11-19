@@ -1,0 +1,101 @@
+# Retail recipe. Demonstrates: a step discovered during the run (resolve: runtime), a tool
+# step, a conditional escalation, and reuse of the finance team's report-writer plugin.
+recipe: weekly-demand-and-stock
+version: 1.0.0
+title: Weekly store demand and stock-out risk
+description: >
+  Loads weekly store sales, forecasts unit demand for the coming weeks, checks stock-out
+  risk against current inventory, escalates high-risk stores and writes an operations report.
+industry: retail
+tags: [retail, demand, forecast, inventory, stockout, stores, weekly, report]
+
+runtime:
+  model: claude-sonnet-5-5
+  discovery_threshold: 0.6
+
+inputs:
+  sales_csv:
+    type: file
+    required: true
+    description: Point-of-sale CSV export with store, region, week and units columns
+  region_filter:
+    type: string
+    default: ALL
+  horizon_weeks:
+    type: integer
+    default: 2
+
+plugins:
+  retail-ingest:   { version: 1.0.0, sha: 7ef7a0510f5cb3da197df347f460bc2a80a469e1 }
+  inventory-tools: { version: 1.0.0, sha: 95c1f62d1237a4be1aef1c31b34928b2d9f7a6be }
+  ops-insights:    { version: 1.0.0, sha: e9f959b85dcb5d615328a432ea43251468b5b01c }
+  report-writer:   { version: 1.0.0, sha: e8a3b83feacb74ac3aadc18417aacad1bc28398c }
+
+blocks:
+  - id: ingest
+    title: Load sales and inventory
+    steps:
+      - id: load_sales
+        uses: retail-ingest#load_store_sales
+        with:
+          file: ${inputs.sales_csv}
+          region_filter: ${inputs.region_filter}
+
+      - id: fetch_inventory
+        uses: inventory-tools#fetch_inventory
+        with:
+          stores: ${steps.load_sales.outputs.stores}
+
+  - id: forecast
+    title: Forecast demand
+    steps:
+      # Resolved when the step is reached, using what the run has produced so far.
+      - id: forecast_demand
+        task: Forecast weekly unit demand for each store for the next few weeks from recent sales history
+        inputs:
+          sales: { contract: table/store-sales@1, value: "${steps.load_sales.outputs.sales}" }
+        outputs:
+          forecast: { contract: table/demand-forecast@1 }
+        with:
+          horizon_weeks: ${inputs.horizon_weeks}
+        discovery:
+          tags: [demand, forecast]
+          kinds: [code]
+          resolve: runtime
+
+  - id: risk
+    title: Stock-out risk
+    steps:
+      - id: stockout
+        uses: inventory-tools#stockout_risk
+        with:
+          forecast: ${steps.forecast_demand.outputs.forecast}
+          inventory: ${steps.fetch_inventory.outputs.inventory}
+
+      - id: escalate
+        type: approval
+        when: steps.stockout.outputs.high_risk_count > 0
+        message: >
+          ${steps.stockout.outputs.high_risk_count} store(s) have less than one week of stock.
+          Confirm the replenishment escalation before the report is sent.
+
+  - id: reporting
+    title: Commentary and report
+    steps:
+      - id: summary
+        uses: ops-insights#store_performance_summary
+        task: Summarise store performance and stock-out risk for the retail operations managers
+        with:
+          sales: ${steps.load_sales.outputs.sales}
+          risk: ${steps.stockout.outputs.risk}
+
+      - id: report
+        uses: report-writer#compose_report
+        task: Compose the weekly store demand and stock report
+        with:
+          commentary: ${steps.summary.outputs.commentary}
+          table: ${steps.stockout.outputs.risk}
+
+outputs:
+  report: ${steps.report.outputs.report}
+  risk: ${steps.stockout.outputs.risk}

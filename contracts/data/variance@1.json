@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "data/variance@1",
+  "title": "data/variance@1",
+  "description": "Variance between last actual and first projected quarter per region",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "region": {
+        "type": "string"
+      },
+      "last_actual_usd": {
+        "type": "number"
+      },
+      "first_projection_usd": {
+        "type": "number"
+      },
+      "variance": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "region",
+      "last_actual_usd",
+      "first_projection_usd",
+      "variance"
+    ],
+    "additionalProperties": true
+  }
+}

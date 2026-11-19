@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "data/inventory@1",
+  "title": "data/inventory@1",
+  "description": "Current on-hand inventory per store",
+  "type": "object",
+  "properties": {
+    "as_of": {
+      "type": "string"
+    },
+    "stores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "store": {
+            "type": "string"
+          },
+          "on_hand": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "store",
+          "on_hand"
+        ],
+        "additionalProperties": true
+      }
+    }
+  },
+  "required": [
+    "as_of",
+    "stores"
+  ]
+}

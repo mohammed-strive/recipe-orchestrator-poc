@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "table/projection@1",
+  "title": "table/projection@1",
+  "description": "Projected quarterly revenue in USD",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "region": {
+        "type": "string"
+      },
+      "quarter": {
+        "type": "string"
+      },
+      "projected_revenue_usd": {
+        "type": "number"
+      },
+      "method": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "region",
+      "quarter",
+      "projected_revenue_usd",
+      "method"
+    ],
+    "additionalProperties": true
+  }
+}

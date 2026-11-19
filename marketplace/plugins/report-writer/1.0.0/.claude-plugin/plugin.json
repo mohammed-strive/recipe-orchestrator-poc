@@ -1,0 +1,8 @@
+{
+  "name": "report-writer",
+  "version": "1.0.0",
+  "description": "Turns commentary and tables into finished Markdown reports.",
+  "author": {
+    "name": "POC Marketplace"
+  }
+}

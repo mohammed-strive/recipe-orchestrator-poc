@@ -1,0 +1,6 @@
+{
+  "mcpServers": {
+    "recipe-engine": { "type": "http", "url": "http://localhost:7400/mcp" },
+    "capability-registry": { "type": "http", "url": "http://localhost:7300/mcp" }
+  }
+}
