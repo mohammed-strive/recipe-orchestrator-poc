@@ -2,7 +2,7 @@
 # End-to-end check of the whole stack without Claude Code's UI:
 # plans an automatic finance run, accepts the recommended plugin if a person is asked,
 # approves the variance review, then evaluates, replays and verifies the audit chain.
-# Needs: docker compose up, and the engine running (cd engine && npm start).
+# Needs: podman compose up, and the engine running (cd engine && npm start).
 set -eu
 cd "$(dirname "$0")/.."
 mcp() { tools/mcp.sh engine "$1" "$2"; }
@@ -34,6 +34,11 @@ done
 
 echo "4. Completed. Report: $(printf "%s" "$state" | field 'd=>d.report_markdown_path')"
 printf "%s" "$state" | field 'd=>d.steps.map(s=>`   ${s.step.padEnd(28)} ${String(s.reproducibility).padEnd(11)} ${s.component||""}${s.fallback_from?"  (fallback from "+s.fallback_from+")":""}`).join("\n")'
-echo "5. Evaluate: $(mcp evaluate_run "{\"run_id\":\"$run\"}" | field 'd=>`confidence ${d.confidence}, passed ${d.passed}`')"
-echo "6. Replay:   $(mcp replay_run "{\"run_id\":\"$run\"}" | field 'd=>`identical ${d.identical}`')"
-echo "7. Audit:    $(mcp get_audit_log "{\"run_id\":\"$run\",\"last\":1}" | field 'd=>`chain valid ${d.chain.valid}, ${d.chain.events} events`')"
+# Assign each result before echoing it. On macOS /bin/sh is bash 3.2, which mis-parses quoted
+# JSON inside "$(...)" nested in a double-quoted string and brace-expands it at the commas.
+evaluation=$(mcp evaluate_run "{\"run_id\":\"$run\"}" | field 'd=>`confidence ${d.confidence}, passed ${d.passed}`')
+echo "5. Evaluate: $evaluation"
+replay=$(mcp replay_run "{\"run_id\":\"$run\"}" | field 'd=>`identical ${d.identical}`')
+echo "6. Replay:   $replay"
+audit=$(mcp get_audit_log "{\"run_id\":\"$run\",\"last\":1}" | field 'd=>`chain valid ${d.chain.valid}, ${d.chain.events} events`')
+echo "7. Audit:    $audit"

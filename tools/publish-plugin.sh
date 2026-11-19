@@ -10,6 +10,8 @@ version="$2"
 src="marketplace/plugins/$plugin/$version"
 [ -d "$src" ] || { echo "No such folder: $src" >&2; exit 1; }
 url="${GIT_BASE_URL:-git://localhost:9418}/$plugin.git"
+# Compose command used to reach the git-server container. Override with COMPOSE="docker compose".
+COMPOSE="${COMPOSE:-podman compose}"
 
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1
 export GIT_AUTHOR_NAME="POC Marketplace" GIT_AUTHOR_EMAIL="marketplace@example.local"
@@ -21,7 +23,7 @@ if git ls-remote "$url" >/dev/null 2>&1; then
   git clone -q "$url" "$work" 2>/dev/null || git init -q -b main "$work"
 else
   echo "Creating repository for new plugin $plugin"
-  docker compose exec -T git-server create-repo.sh "$plugin"
+  $COMPOSE exec -T git-server create-repo.sh "$plugin"
   git init -q -b main "$work"
 fi
 git -C "$work" config core.fileMode false
